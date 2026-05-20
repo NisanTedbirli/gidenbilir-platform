@@ -38,12 +38,4 @@ const nextConfig: NextConfig = {
   },
 }
 
-// ANALYZE=true npm run build ile bundle analizi
-if (process.env.ANALYZE === 'true') {
-  const withBundleAnalyzer = (await import('@next/bundle-analyzer')).default
-  module.exports = withBundleAnalyzer({ enabled: true })(nextConfig)
-} else {
-  module.exports = nextConfig
-}
-
 export default nextConfig
