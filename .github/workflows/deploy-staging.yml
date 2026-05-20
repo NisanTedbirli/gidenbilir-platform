@@ -1,0 +1,46 @@
+name: Deploy to Staging
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  deploy:
+    name: Deploy Staging
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '9.0.x'
+
+      - name: Build & Publish API
+        working-directory: gidenbilir-api
+        run: dotnet publish Perspektif.API -c Release -o /tmp/api-publish
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: gidenbilir-web/package-lock.json
+
+      - name: Build Frontend
+        working-directory: gidenbilir-web
+        run: |
+          npm ci
+          npm run build
+        env:
+          NEXT_PUBLIC_API_BASE_URL: ${{ secrets.STAGING_API_URL }}
+          NEXT_PUBLIC_SITE_URL: ${{ secrets.STAGING_SITE_URL }}
+
+      - name: Deploy API to Render
+        if: ${{ secrets.RENDER_DEPLOY_HOOK != '' }}
+        run: curl -X POST "${{ secrets.RENDER_DEPLOY_HOOK }}"
+
+      - name: Deploy Frontend to Vercel
+        if: ${{ secrets.VERCEL_DEPLOY_HOOK != '' }}
+        run: curl -X POST "${{ secrets.VERCEL_DEPLOY_HOOK }}"

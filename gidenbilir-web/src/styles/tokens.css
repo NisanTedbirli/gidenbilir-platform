@@ -1,0 +1,118 @@
+/*
+ * GidenBilir Design Tokens
+ * Source: Perspektif/mobile/perspektif/src/theme/{colors,typography,spacing}.ts
+ * Sıcak & Seyahat — turuncu primary + krem zemin
+ */
+
+:root {
+  /* === Renkler === */
+
+  /* Zeminler */
+  --color-bg: #fff9f5;
+  --color-bg-surface: #ffffff;
+  --color-bg-elevated: #fff3ea;
+
+  /* Marka */
+  --color-primary: #ff6b35;
+  --color-primary-dark: #e8521a;
+  --color-primary-light: #fff0ea;
+  --color-secondary: #1da1f2;
+  --color-secondary-light: #e8f5fe;
+  --color-accent: #ffb800;
+
+  /* Feedback */
+  --color-success: #10b981;
+  --color-success-light: #d1fae5;
+  --color-danger: #ef4444;
+  --color-danger-light: #fee2e2;
+
+  /* Metin */
+  --color-text: #1a1a1a;
+  --color-text-sub: #6b7280;
+  --color-text-mute: #c4c4c4;
+  --color-text-on: #ffffff;
+
+  /* Kenarlık */
+  --color-border: #f0e8df;
+  --color-border-medium: #e8d5c4;
+  --color-border-focus: #ff6b35;
+
+  /* Gradient'ler (CSS gradient string olarak kullanılır) */
+  --gradient-primary: linear-gradient(135deg, #ff8c5a 0%, #ff6b35 100%);
+  --gradient-sky: linear-gradient(135deg, #38bdf8 0%, #1da1f2 100%);
+  --gradient-card: linear-gradient(180deg, transparent 0%, rgba(26, 26, 26, 0.7) 100%);
+  --gradient-hero: linear-gradient(180deg, #fff9f5 0%, #fff3ea 100%);
+
+  /* === Tipografi === */
+  --font-sans: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+    sans-serif;
+
+  /* Font boyutları (mobile typography.ts'tan adapte, web için hafif fluid) */
+  --text-hero: clamp(2rem, 1.6rem + 2vw, 3rem); /* 32px → 48px (web büyük) */
+  --text-title: clamp(1.375rem, 1.2rem + 0.875vw, 1.875rem); /* 22px → 30px */
+  --text-title2: 1.125rem; /* 18px */
+  --text-body: 0.9375rem; /* 15px */
+  --text-body-sm: 0.8125rem; /* 13px */
+  --text-caption: 0.6875rem; /* 11px */
+  --text-label: 0.75rem; /* 12px */
+
+  /* Font ağırlıkları */
+  --font-weight-normal: 400;
+  --font-weight-medium: 600;
+  --font-weight-bold: 700;
+  --font-weight-extrabold: 800;
+
+  /* Satır yükseklikleri */
+  --leading-tight: 1.2;
+  --leading-snug: 1.35;
+  --leading-normal: 1.5;
+  --leading-relaxed: 1.6;
+
+  /* Letter spacing */
+  --tracking-tight: -0.02em;
+  --tracking-tighter: -0.04em;
+  --tracking-wide: 0.04em;
+  --tracking-wider: 0.06em;
+
+  /* === Spacing (mobile S object'tan) === */
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 12px;
+  --space-lg: 16px;
+  --space-xl: 24px;
+  --space-2xl: 32px;
+  --space-3xl: 48px;
+
+  /* === Border Radius === */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-2xl: 24px;
+  --radius-full: 9999px;
+
+  /* === Shadow === */
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.06), 0 1px 3px 0 rgb(0 0 0 / 0.05);
+  --shadow-md: 0 4px 16px -2px rgb(255 107 53 / 0.14), 0 2px 4px -1px rgb(0 0 0 / 0.06);
+  --shadow-lg: 0 16px 32px -8px rgb(255 107 53 / 0.18), 0 4px 8px -2px rgb(0 0 0 / 0.08);
+
+  /* === Animasyon === */
+  --duration-fast: 100ms;
+  --duration-normal: 200ms;
+  --duration-slow: 300ms;
+  --easing-default: cubic-bezier(0.4, 0, 0.2, 1);
+  --easing-out: cubic-bezier(0, 0, 0.2, 1);
+
+  /* === Layout === */
+  --layout-sidebar-width: 256px;
+  --layout-content-max: 1280px;
+  --layout-header-height: 64px;
+
+  /* === Z-index === */
+  --z-base: 0;
+  --z-dropdown: 100;
+  --z-sticky: 200;
+  --z-overlay: 300;
+  --z-modal: 400;
+  --z-toast: 500;
+}

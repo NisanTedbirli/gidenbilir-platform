@@ -1,0 +1,108 @@
+@import './tokens.css';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+
+  html {
+    -webkit-text-size-adjust: 100%;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    background-color: var(--color-bg);
+    color: var(--color-text);
+    font-family: var(--font-sans);
+    font-size: var(--text-body);
+    line-height: var(--leading-normal);
+    margin: 0;
+    min-height: 100dvh;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    margin: 0;
+    font-weight: var(--font-weight-extrabold);
+    letter-spacing: var(--tracking-tight);
+    line-height: var(--leading-tight);
+  }
+
+  p {
+    margin: 0;
+    max-width: var(--max-width-prose, 65ch);
+  }
+
+  a {
+    color: inherit;
+    text-decoration: inherit;
+  }
+
+  button {
+    font-family: inherit;
+    cursor: pointer;
+  }
+
+  /* Focus indicator — erişilebilirlik için kritik */
+  :focus-visible {
+    outline: 2px solid var(--color-border-focus);
+    outline-offset: 2px;
+    border-radius: var(--radius-sm);
+  }
+
+  /* Reduced motion preference */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
+
+@layer components {
+  .container-content {
+    width: 100%;
+    max-width: var(--layout-content-max);
+    margin-inline: auto;
+    padding-inline: var(--space-lg);
+  }
+
+  @media (min-width: 768px) {
+    .container-content {
+      padding-inline: var(--space-xl);
+    }
+  }
+
+  /* "İçeriğe atla" linki — klavye/screen reader kullanıcıları için */
+  .skip-link {
+    position: absolute;
+    top: -100px;
+    left: var(--space-lg);
+    background: var(--color-primary);
+    color: var(--color-text-on);
+    padding: var(--space-md) var(--space-lg);
+    border-radius: var(--radius-md);
+    z-index: var(--z-toast);
+    text-decoration: none;
+    font-weight: var(--font-weight-bold);
+  }
+
+  .skip-link:focus {
+    top: var(--space-lg);
+  }
+}

@@ -1,0 +1,67 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [main, develop]
+  push:
+    branches: [main]
+
+jobs:
+  backend:
+    name: Backend (.NET 9)
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '9.0.x'
+
+      - name: Restore
+        working-directory: gidenbilir-api
+        run: dotnet restore
+
+      - name: Build
+        working-directory: gidenbilir-api
+        run: dotnet build --no-restore --configuration Release
+
+      - name: Test
+        working-directory: gidenbilir-api
+        run: dotnet test --no-build --configuration Release --verbosity normal
+        env:
+          JWT_SECRET: ci-test-secret-minimum-32-characters
+
+  frontend:
+    name: Frontend (Next.js 15)
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: gidenbilir-web/package-lock.json
+
+      - name: Install
+        working-directory: gidenbilir-web
+        run: npm ci
+
+      - name: Lint
+        working-directory: gidenbilir-web
+        run: npm run lint
+
+      - name: Type check
+        working-directory: gidenbilir-web
+        run: npx tsc --noEmit
+
+      - name: Build
+        working-directory: gidenbilir-web
+        run: npm run build
+        env:
+          NEXT_PUBLIC_API_BASE_URL: http://localhost:5000
+          NEXT_PUBLIC_SITE_URL: http://localhost:3000
