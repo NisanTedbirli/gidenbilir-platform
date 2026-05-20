@@ -333,7 +333,8 @@ static string ResolveConnectionString(IConfiguration config)
             var userInfo = uri.UserInfo.Split(':');
             var user = Uri.UnescapeDataString(userInfo[0]);
             var pass = userInfo.Length > 1 ? Uri.UnescapeDataString(userInfo[1]) : "";
-            return $"Host={uri.Host};Port={uri.Port};Database={uri.AbsolutePath.TrimStart('/')};" +
+            var port = uri.Port == -1 ? 5432 : uri.Port;
+            return $"Host={uri.Host};Port={port};Database={uri.AbsolutePath.TrimStart('/')};" +
                    $"Username={user};Password={pass};SSL Mode=Require;Trust Server Certificate=true";
         }
         catch
