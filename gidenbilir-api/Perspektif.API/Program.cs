@@ -202,11 +202,14 @@ var corsOrigins = (Environment.GetEnvironmentVariable("CORS_ORIGINS")
     .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
 
 builder.Services.AddCors(opts =>
-    opts.AddDefaultPolicy(p => p
-        .WithOrigins(corsOrigins)
-        .WithMethods("GET", "POST", "PUT", "PATCH", "DELETE")
-        .AllowAnyHeader()
-        .AllowCredentials()));
+    opts.AddDefaultPolicy(p =>
+    {
+        var policy = p.WithMethods("GET", "POST", "PUT", "PATCH", "DELETE").AllowAnyHeader();
+        if (corsOrigins.Length == 1 && corsOrigins[0] == "*")
+            policy.AllowAnyOrigin();
+        else
+            policy.WithOrigins(corsOrigins).AllowCredentials();
+    }));
 
 var app = builder.Build();
 
