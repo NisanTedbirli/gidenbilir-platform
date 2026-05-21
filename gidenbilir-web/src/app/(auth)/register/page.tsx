@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { useMemo, useState, type FormEvent } from 'react'
+import { useMemo, useRef, useState, type FormEvent } from 'react'
 import { Button, ErrorBox, Input } from '@/components/ui'
 import { useAuth } from '@/hooks/useAuth'
 import { useNationalities } from '@/hooks/useLookups'
@@ -18,6 +18,7 @@ export default function RegisterPage() {
   const [selectedNatId, setSelectedNatId] = useState<number | null>(null)
   const [natSearch, setNatSearch] = useState('')
   const [showDropdown, setShowDropdown] = useState(false)
+  const inputRef = useRef<HTMLInputElement>(null)
   const [localError, setLocalError] = useState<string | null>(null)
 
   const filtered = useMemo(() => {
@@ -114,6 +115,7 @@ export default function RegisterPage() {
           ) : (
             <div className="relative">
               <input
+                ref={inputRef}
                 id="nationality-search"
                 type="text"
                 value={natSearch}
@@ -133,7 +135,14 @@ export default function RegisterPage() {
                 <ul
                   id="nationality-listbox"
                   role="listbox"
-                  className="absolute left-0 right-0 top-full z-dropdown mt-1 max-h-60 overflow-y-auto rounded-2xl border border-border bg-bg-surface shadow-lg"
+                  style={{
+                    position: 'fixed',
+                    top: (inputRef.current?.getBoundingClientRect().bottom ?? 0) + 4,
+                    left: inputRef.current?.getBoundingClientRect().left ?? 0,
+                    width: inputRef.current?.getBoundingClientRect().width ?? 'auto',
+                    zIndex: 9999,
+                  }}
+                  className="max-h-60 overflow-y-auto rounded-2xl border border-border bg-bg-surface shadow-lg"
                 >
                   {natLoading ? (
                     <li className="px-lg py-md text-center text-[13px] text-text-sub">
