@@ -88,20 +88,22 @@ export const deleteAccount = (data: DeleteAccountInput) =>
 
 // === Lookups ===
 // Backend LookupDto üçüncü alanı farklı versiyonlarda 'extra' veya 'flagEmoji' olarak dönebilir.
-const normalizeLookup = (item: any) => ({
+interface RawLookup { id: number; name: string; flagEmoji?: string; extra?: string; icon?: string }
+
+const normalizeLookup = (item: RawLookup) => ({
   ...item,
   flagEmoji: item.flagEmoji ?? item.extra ?? '',
   icon: item.icon ?? item.extra ?? '',
 })
 
 export const getNationalities = () =>
-  api.get<any[]>('/lookups/nationalities').then(r => ({ ...r, data: r.data.map(normalizeLookup) as Nationality[] }))
+  api.get<RawLookup[]>('/lookups/nationalities').then(r => ({ ...r, data: r.data.map(normalizeLookup) as Nationality[] }))
 
 export const getCountries = () =>
-  api.get<any[]>('/lookups/countries').then(r => ({ ...r, data: r.data.map(normalizeLookup) as Country[] }))
+  api.get<RawLookup[]>('/lookups/countries').then(r => ({ ...r, data: r.data.map(normalizeLookup) as Country[] }))
 
 export const getCategories = () =>
-  api.get<any[]>('/lookups/categories').then(r => ({ ...r, data: r.data.map(normalizeLookup) as Category[] }))
+  api.get<RawLookup[]>('/lookups/categories').then(r => ({ ...r, data: r.data.map(normalizeLookup) as Category[] }))
 
 // === Experiences ===
 export const getExperiences = (params?: ExperienceFilters) =>

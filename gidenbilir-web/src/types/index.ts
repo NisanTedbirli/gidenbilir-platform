@@ -15,14 +15,14 @@ export interface AuthUser {
 export interface Nationality {
   id: number
   name: string
-  code: string
+  code?: string
   flagEmoji: string
 }
 
 export interface Country {
   id: number
   name: string
-  code: string
+  code?: string
   flagEmoji: string
 }
 
