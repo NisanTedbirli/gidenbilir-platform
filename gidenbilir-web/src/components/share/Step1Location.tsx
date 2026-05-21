@@ -1,8 +1,7 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
-import { useQuery } from '@tanstack/react-query'
-import { getCountries } from '@/lib/api'
+import { useCountries } from '@/hooks/useLookups'
 import { CITIES } from '@/lib/cities'
 import type { Country } from '@/types'
 import { ChevronDown } from 'lucide-react'
@@ -24,13 +23,7 @@ export function Step1Location({
   const [searchInput, setSearchInput] = useState('')
   const [showCountries, setShowCountries] = useState(false)
 
-  const { data: countries = [] } = useQuery({
-    queryKey: ['countries'],
-    queryFn: async () => {
-      const response = await getCountries()
-      return response.data
-    },
-  })
+  const { data: countries = [] } = useCountries()
 
   const filteredCountries = countries.filter(c =>
     c.name.toLowerCase().includes(searchInput.toLowerCase())
@@ -80,12 +73,15 @@ export function Step1Location({
             id="step1-country"
             type="text"
             placeholder="Ülke seçin..."
-            value={searchInput || (countryId ? countries.find(c => c.id === countryId)?.name ?? '' : '')}
+            value={showCountries ? searchInput : (searchInput || (countryId ? countries.find(c => c.id === countryId)?.name ?? '' : ''))}
             onChange={(e) => {
               setSearchInput(e.target.value)
               setShowCountries(true)
             }}
-            onFocus={() => setShowCountries(true)}
+            onFocus={() => {
+              setSearchInput('')
+              setShowCountries(true)
+            }}
             className="w-full rounded-lg border border-border bg-bg-surface px-lg py-md pr-lg text-text focus:border-primary focus:outline-none"
           />
           <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 text-text-mute pointer-events-none" size={20} />
