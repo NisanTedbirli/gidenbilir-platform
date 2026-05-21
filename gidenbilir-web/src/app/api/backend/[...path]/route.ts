@@ -12,6 +12,10 @@ import { AUTH_COOKIE_NAME } from '@/lib/auth'
 
 const BACKEND_URL = process.env.API_URL ?? process.env.NEXT_PUBLIC_API_BASE_URL ?? 'http://localhost:5000'
 
+// Lookup endpoint'leri nadiren değişir — Vercel'de 24 saat cache'le.
+// Render cold-start sorununu çözer: ilk istek sonrası Vercel kendi cache'inden döner.
+const LOOKUP_PATHS = ['lookups/nationalities', 'lookups/countries', 'lookups/categories']
+
 async function proxy(req: NextRequest, params: { path: string[] }) {
   const path = params.path.join('/')
   const search = req.nextUrl.search
@@ -27,13 +31,16 @@ async function proxy(req: NextRequest, params: { path: string[] }) {
   const hasBody = req.method !== 'GET' && req.method !== 'HEAD'
   const body = hasBody ? await req.arrayBuffer() : undefined
 
+  const isLookup = req.method === 'GET' && LOOKUP_PATHS.includes(path)
+
   try {
     const upstream = await fetch(target, {
       method: req.method,
       headers,
       body,
-      // Next.js fetch cache'i devre dışı bırak (her zaman taze)
-      cache: 'no-store',
+      ...(isLookup
+        ? { next: { revalidate: 86400 } }  // 24 saat Vercel cache — Render'ı uyandırmaz
+        : { cache: 'no-store' }),
     })
 
     const responseHeaders = new Headers(upstream.headers)
