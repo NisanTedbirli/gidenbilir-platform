@@ -82,7 +82,8 @@ export function ShareWizard() {
     },
     onError: (err) => {
       submitLockRef.current = false
-      setError(err instanceof Error ? err.message : 'Bir hata oluştu.')
+      const axiosMsg = (err as {response?: {data?: {message?: string}}}).response?.data?.message
+      setError(axiosMsg ?? (err instanceof Error ? err.message : 'Bir hata oluştu.'))
     },
   })
 
