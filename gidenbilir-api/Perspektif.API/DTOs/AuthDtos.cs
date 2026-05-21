@@ -68,7 +68,7 @@ public record ExperienceUpdateRequest(
     [Required][Range(1, 5)] int Rating,
     int CategoryId);
 
-public record LookupDto(int Id, string Name, string Extra);
+public record LookupDto(int Id, string Name, string FlagEmoji);
 
 public record ForgotPasswordRequest(
     [Required][EmailAddress] string Email);
