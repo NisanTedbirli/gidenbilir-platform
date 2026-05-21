@@ -11,25 +11,44 @@ interface ExperienceCardProps {
   priority?: boolean
 }
 
+function getVideoThumbnail(videoUrl: string): string {
+  // Cloudinary video URL'ini thumbnail'e çevir: .mp4/.mov → .jpg, so_0 ile ilk kare
+  return videoUrl
+    .replace('/video/upload/', '/video/upload/so_0,w_800,h_450,c_fill/')
+    .replace(/\.(mp4|mov|webm|avi)(\?.*)?$/, '.jpg')
+}
+
 export function ExperienceCard({ experience, priority = false }: ExperienceCardProps) {
   const coverPhoto = experience.photoUrls?.[0]
+  const videoThumb = !coverPhoto && experience.videoUrl ? getVideoThumbnail(experience.videoUrl) : null
+  const coverImage = coverPhoto || videoThumb
   const extraPhotos = (experience.photoUrls?.length ?? 0) - 1
   const ratingStars = Math.round(experience.rating || 0)
 
   return (
     <Link href={`/experiences/${experience.id}`}>
       <article className="group overflow-hidden rounded-2xl border border-border bg-bg-surface shadow-md transition hover:shadow-lg hover:brightness-95">
-        {/* Cover Photo */}
+        {/* Cover Photo / Video Thumbnail */}
         <div className="relative aspect-video overflow-hidden bg-bg-elevated">
-          {coverPhoto ? (
-            <Image
-              src={coverPhoto}
-              alt={experience.title}
-              fill
-              className="object-cover transition group-hover:scale-105"
-              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-              priority={priority}
-            />
+          {coverImage ? (
+            <>
+              <Image
+                src={coverImage}
+                alt={experience.title}
+                fill
+                className="object-cover transition group-hover:scale-105"
+                sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                priority={priority}
+              />
+              {/* Play overlay for video-only cards */}
+              {videoThumb && (
+                <div className="absolute inset-0 flex items-center justify-center bg-black/20">
+                  <div className="flex size-12 items-center justify-center rounded-full bg-white/90 shadow-lg">
+                    <PlayCircle size={28} className="text-primary" fill="white" />
+                  </div>
+                </div>
+              )}
+            </>
           ) : (
             <div
               className="relative h-full w-full overflow-hidden"
@@ -105,8 +124,8 @@ export function ExperienceCard({ experience, priority = false }: ExperienceCardP
             {experience.categoryName}
           </div>
 
-          {/* Video badge */}
-          {experience.videoUrl && (
+          {/* Video badge — sadece fotoğraf da varsa göster (video-only'de zaten play overlay var) */}
+          {experience.videoUrl && coverPhoto && (
             <div className="absolute left-3 bottom-3 flex items-center gap-1 rounded-full bg-black/70 px-2.5 py-1 text-[12px] font-bold text-white backdrop-blur-sm">
               <PlayCircle size={14} />
               <span>Video</span>
