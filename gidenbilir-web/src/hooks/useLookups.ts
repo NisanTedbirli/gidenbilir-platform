@@ -6,12 +6,19 @@
 import { useQuery } from '@tanstack/react-query'
 import { getCategories, getCountries, getNationalities } from '@/lib/api'
 
+const LOOKUP_OPTIONS = {
+  staleTime: 10 * 60_000,  // 10 dakika — Render cold-start sonrası yenilenir
+  gcTime: 30 * 60_000,
+  retry: 3,
+  retryDelay: 2000,
+  refetchOnMount: true,
+} as const
+
 export function useNationalities() {
   return useQuery({
     queryKey: ['lookups', 'nationalities'],
     queryFn: async () => (await getNationalities()).data,
-    staleTime: Infinity,
-    gcTime: Infinity,
+    ...LOOKUP_OPTIONS,
   })
 }
 
@@ -19,8 +26,7 @@ export function useCountries() {
   return useQuery({
     queryKey: ['lookups', 'countries'],
     queryFn: async () => (await getCountries()).data,
-    staleTime: Infinity,
-    gcTime: Infinity,
+    ...LOOKUP_OPTIONS,
   })
 }
 
@@ -28,7 +34,6 @@ export function useCategories() {
   return useQuery({
     queryKey: ['lookups', 'categories'],
     queryFn: async () => (await getCategories()).data,
-    staleTime: Infinity,
-    gcTime: Infinity,
+    ...LOOKUP_OPTIONS,
   })
 }
