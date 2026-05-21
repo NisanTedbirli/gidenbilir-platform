@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef } from 'react'
 import { useInfiniteQuery } from '@tanstack/react-query'
 import { getExperiences } from '@/lib/api'
 import { VideoPlayer } from '@/components/ui/VideoPlayer'

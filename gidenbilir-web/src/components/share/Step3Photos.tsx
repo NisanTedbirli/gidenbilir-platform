@@ -170,6 +170,7 @@ export function Step3Photos({ photos, onPhotosChange, video, onVideoChange }: St
             {photos.map((photo) => (
               <div key={photo.id} className="relative group">
                 <div className="relative w-full h-40 rounded-lg overflow-hidden bg-bg-elevated border border-border">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     src={photo.preview}
                     alt="Preview"
