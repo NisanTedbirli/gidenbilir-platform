@@ -9,17 +9,40 @@ interface PhotoPreview {
   preview: string
 }
 
+interface VideoPreview {
+  file: File
+  preview: string
+}
+
 interface Step3PhotosProps {
   photos: PhotoPreview[]
   onPhotosChange: (photos: PhotoPreview[]) => void
+  video: VideoPreview | null
+  onVideoChange: (video: VideoPreview | null) => void
 }
 
 const MAX_PHOTOS = 5
 const MAX_FILE_SIZE = 10 * 1024 * 1024 // 10MB
 
-export function Step3Photos({ photos, onPhotosChange }: Step3PhotosProps) {
+const MAX_VIDEO_SIZE = 100 * 1024 * 1024 // 100MB
+
+export function Step3Photos({ photos, onPhotosChange, video, onVideoChange }: Step3PhotosProps) {
   const [dragActive, setDragActive] = useState(false)
   const [error, setError] = useState<string | null>(null)
+
+  const handleVideo = (file: File) => {
+    setError(null)
+    const allowed = ['video/mp4', 'video/quicktime', 'video/webm', 'video/x-msvideo']
+    if (!allowed.includes(file.type)) {
+      setError('Geçersiz video formatı. MP4, MOV veya WebM olmalı.')
+      return
+    }
+    if (file.size > MAX_VIDEO_SIZE) {
+      setError('Video 100MB\'den küçük olmalıdır.')
+      return
+    }
+    onVideoChange({ file, preview: URL.createObjectURL(file) })
+  }
 
   const handlePhotos = useCallback(
     (files: FileList | null) => {
@@ -92,8 +115,8 @@ export function Step3Photos({ photos, onPhotosChange }: Step3PhotosProps) {
   }
 
   return (
-    <div className="space-y-lg">
-      <h2 className="text-[22px] font-bold text-text">Fotoğraf Yükleyin</h2>
+    <div className="space-y-xl">
+      <h2 className="text-[22px] font-bold text-text">Fotoğraf &amp; Video Yükleyin</h2>
 
       {/* Error Message */}
       {error && (
@@ -166,11 +189,44 @@ export function Step3Photos({ photos, onPhotosChange }: Step3PhotosProps) {
         </div>
       )}
 
-      {/* Info — isteğe bağlı */}
-      {photos.length === 0 && (
+      {/* Video Upload */}
+      <div className="space-y-md">
+        <h3 className="text-[17px] font-bold text-text">Video <span className="text-[13px] font-normal text-text-mute">(isteğe bağlı, maks 1 video)</span></h3>
+
+        {video ? (
+          <div className="relative rounded-lg overflow-hidden bg-black">
+            <video src={video.preview} className="w-full max-h-64 object-contain" controls />
+            <button
+              onClick={() => onVideoChange(null)}
+              className="absolute top-2 right-2 bg-danger text-white rounded-full p-1"
+              aria-label="Videoyu kaldır"
+            >
+              <X size={16} />
+            </button>
+          </div>
+        ) : (
+          <label className="flex items-center gap-md p-lg rounded-lg border-2 border-dashed border-border bg-bg-elevated cursor-pointer hover:border-primary transition">
+            <Upload size={24} className="text-primary flex-shrink-0" />
+            <div>
+              <p className="font-semibold text-text text-sm">Video yükle</p>
+              <p className="text-[12px] text-text-mute">MP4, MOV, WebM — maks 100MB</p>
+            </div>
+            <input
+              type="file"
+              accept="video/mp4,video/quicktime,video/webm,video/x-msvideo"
+              onChange={(e) => e.target.files?.[0] && handleVideo(e.target.files[0])}
+              className="hidden"
+              aria-label="Video yükle"
+            />
+          </label>
+        )}
+      </div>
+
+      {/* Info */}
+      {photos.length === 0 && !video && (
         <div className="p-lg rounded-lg bg-bg-elevated border border-border">
           <p className="text-sm text-text-sub">
-            Fotoğraf yüklemek <strong>isteğe bağlıdır</strong>. Fotoğrafsız da paylaşabilirsiniz.
+            Fotoğraf ve video yüklemek <strong>isteğe bağlıdır</strong>.
           </p>
         </div>
       )}

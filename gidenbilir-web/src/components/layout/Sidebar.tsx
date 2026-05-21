@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Compass, Home, LogOut, MessageSquare, PlusCircle, User } from 'lucide-react'
+import { Compass, Home, LogOut, MessageSquare, Play, PlusCircle, User } from 'lucide-react'
 import { cn } from '@/lib/cn'
 import { useAuth } from '@/hooks/useAuth'
 import { useUnreadMessageCount } from '@/hooks/useUnreadMessages'
@@ -17,6 +17,7 @@ const NAV_ITEMS: NavItem[] = [
   { href: '/', label: 'Ana Sayfa', icon: Home },
   { href: '/discover', label: 'Keşfet', icon: Compass },
   { href: '/share', label: 'Paylaş', icon: PlusCircle },
+  { href: '/videos', label: 'Videolar', icon: Play },
   { href: '/messages', label: 'Mesajlar', icon: MessageSquare },
   { href: '/profile/me', label: 'Profilim', icon: User },
 ]

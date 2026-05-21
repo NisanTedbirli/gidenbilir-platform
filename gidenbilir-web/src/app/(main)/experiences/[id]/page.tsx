@@ -2,6 +2,7 @@ import { notFound } from 'next/navigation'
 import type { Metadata } from 'next'
 import { getExperience, getComments, getSimilarExperiences } from '@/lib/api'
 import { PhotoGallery } from '@/components/detail/PhotoGallery'
+import { VideoPlayer } from '@/components/ui/VideoPlayer'
 import { LikeButton } from '@/components/detail/LikeButton'
 import { AskQuestionButton } from '@/components/detail/AskQuestionButton'
 import { CommentSection } from '@/components/detail/CommentSection'
@@ -73,8 +74,8 @@ export default async function DetailPage({ params }: DetailPageProps) {
 
           {/* Grid Layout: Photo left, Info right (desktop) */}
           <div className="grid lg:grid-cols-[3fr_2fr] gap-2xl mb-2xl">
-            {/* Photo Gallery */}
-            <div>
+            {/* Photo Gallery + Video */}
+            <div className="space-y-lg">
               <PhotoGallery
                 photoUrls={experience.photoUrls}
                 title={experience.title}
@@ -82,6 +83,13 @@ export default async function DetailPage({ params }: DetailPageProps) {
                 countryName={experience.countryName}
                 city={experience.city}
               />
+              {experience.videoUrl && (
+                <VideoPlayer
+                  src={experience.videoUrl}
+                  title={experience.title}
+                  className="aspect-video w-full"
+                />
+              )}
             </div>
 
             {/* Info Section */}

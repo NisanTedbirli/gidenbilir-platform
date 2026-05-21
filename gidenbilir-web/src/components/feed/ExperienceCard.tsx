@@ -2,7 +2,7 @@
 
 import Image from 'next/image'
 import Link from 'next/link'
-import { MapPin } from 'lucide-react'
+import { MapPin, PlayCircle } from 'lucide-react'
 import { timeAgo } from '@/lib/dateUtils'
 import type { Experience } from '@/types'
 
@@ -104,6 +104,14 @@ export function ExperienceCard({ experience, priority = false }: ExperienceCardP
             </span>
             {experience.categoryName}
           </div>
+
+          {/* Video badge */}
+          {experience.videoUrl && (
+            <div className="absolute left-3 bottom-3 flex items-center gap-1 rounded-full bg-black/70 px-2.5 py-1 text-[12px] font-bold text-white backdrop-blur-sm">
+              <PlayCircle size={14} />
+              <span>Video</span>
+            </div>
+          )}
 
           {/* Extra photos counter */}
           {extraPhotos > 0 && (

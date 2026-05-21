@@ -48,6 +48,48 @@ public class UploadsController(AppDbContext db, CloudinaryService cloudinary) : 
         return Ok(new { url, publicId });
     }
 
+    // POST /api/uploads/experience/{experienceId}/video
+    [HttpPost("experience/{experienceId}/video")]
+    [RequestSizeLimit(100_000_000)] // 100 MB
+    public async Task<IActionResult> UploadExperienceVideo(int experienceId, IFormFile file)
+    {
+        var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+        var experience = await db.Experiences.FindAsync(experienceId);
+        if (experience == null) return NotFound(new { message = "Deneyim bulunamadı." });
+        if (experience.UserId != userId) return Forbid();
+
+        var allowedTypes = new[] { "video/mp4", "video/quicktime", "video/webm", "video/x-msvideo" };
+        if (!allowedTypes.Contains(file.ContentType.ToLower()))
+            return BadRequest(new { message = "Geçersiz video formatı. MP4, MOV, WebM veya AVI olmalı." });
+
+        if (!string.IsNullOrEmpty(experience.VideoPublicId))
+            await cloudinary.DeleteVideoAsync(experience.VideoPublicId);
+
+        var (url, publicId) = await cloudinary.UploadVideoAsync(file);
+        experience.VideoUrl = url;
+        experience.VideoPublicId = publicId;
+        await db.SaveChangesAsync();
+
+        return Ok(new { url, publicId });
+    }
+
+    // DELETE /api/uploads/experience/{experienceId}/video
+    [HttpDelete("experience/{experienceId}/video")]
+    public async Task<IActionResult> DeleteExperienceVideo(int experienceId)
+    {
+        var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+        var experience = await db.Experiences.FindAsync(experienceId);
+        if (experience == null) return NotFound();
+        if (experience.UserId != userId) return Forbid();
+        if (string.IsNullOrEmpty(experience.VideoPublicId)) return NoContent();
+
+        await cloudinary.DeleteVideoAsync(experience.VideoPublicId);
+        experience.VideoUrl = null;
+        experience.VideoPublicId = null;
+        await db.SaveChangesAsync();
+        return Ok();
+    }
+
     // DELETE /api/uploads/photo/{photoId}
     [HttpDelete("photo/{photoId}")]
     public async Task<IActionResult> DeletePhoto(int photoId)

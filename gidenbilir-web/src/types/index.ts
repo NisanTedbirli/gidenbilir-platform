@@ -69,6 +69,7 @@ export interface Experience {
   photoUrls: string[]
   likeCount: number
   isLikedByMe: boolean
+  videoUrl: string | null
 }
 
 export interface Comment {

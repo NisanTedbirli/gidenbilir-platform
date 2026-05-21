@@ -46,9 +46,35 @@ public class CloudinaryService
         return (result.SecureUrl.ToString(), result.PublicId);
     }
 
+    public async Task<(string Url, string PublicId)> UploadVideoAsync(IFormFile file)
+    {
+        if (file.Length == 0) throw new ArgumentException("Dosya boş.");
+
+        using var stream = file.OpenReadStream();
+        var uploadParams = new VideoUploadParams
+        {
+            File = new FileDescription(file.FileName, stream),
+            Folder = "perspektif/videos",
+            Transformation = new Transformation().Quality("auto"),
+        };
+
+        var result = await _cloudinary.UploadAsync(uploadParams);
+
+        if (result.Error != null)
+            throw new Exception($"Cloudinary video hata: {result.Error.Message}");
+
+        return (result.SecureUrl.ToString(), result.PublicId);
+    }
+
     public async Task DeleteAsync(string publicId)
     {
         var deleteParams = new DeletionParams(publicId);
+        await _cloudinary.DestroyAsync(deleteParams);
+    }
+
+    public async Task DeleteVideoAsync(string publicId)
+    {
+        var deleteParams = new DeletionParams(publicId) { ResourceType = ResourceType.Video };
         await _cloudinary.DestroyAsync(deleteParams);
     }
 }

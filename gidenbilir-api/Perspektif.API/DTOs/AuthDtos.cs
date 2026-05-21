@@ -49,7 +49,8 @@ public record ExperienceDto(
     string? City,
     string? BudgetLevel,
     int LikeCount,
-    bool IsLikedByMe);
+    bool IsLikedByMe,
+    string? VideoUrl);
 
 public record CommentDto(
     int Id,

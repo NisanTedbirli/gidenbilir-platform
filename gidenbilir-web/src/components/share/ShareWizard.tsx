@@ -3,7 +3,7 @@
 import { useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { createExperience, uploadExperiencePhoto } from '@/lib/api'
+import { createExperience, uploadExperiencePhoto, uploadExperienceVideo } from '@/lib/api'
 import { Step1Location } from './Step1Location'
 import { Step2Story } from './Step2Story'
 import { Step3Photos } from './Step3Photos'
@@ -36,8 +36,9 @@ export function ShareWizard() {
   const [budgetLevel, setBudgetLevel] = useState<BudgetLevel | null>(null)
   const [visitDate, setVisitDate] = useState('')
 
-  // Step 3: Photos
+  // Step 3: Photos + Video
   const [photos, setPhotos] = useState<PhotoPreview[]>([])
+  const [video, setVideo] = useState<{ file: File; preview: string } | null>(null)
 
   const createMutation = useMutation({
     mutationFn: async () => {
@@ -64,14 +65,12 @@ export function ShareWizard() {
 
       // Upload photos
       for (const photo of photos) {
-        console.log('[ShareWizard] Uploading photo:', photo.file.name)
-        try {
-          await uploadExperiencePhoto(experienceId, photo.file)
-          console.log('[ShareWizard] Photo uploaded:', photo.file.name)
-        } catch (err) {
-          console.error('[ShareWizard] Photo upload failed:', photo.file.name, err)
-          throw err
-        }
+        await uploadExperiencePhoto(experienceId, photo.file)
+      }
+
+      // Upload video
+      if (video) {
+        await uploadExperienceVideo(experienceId, video.file)
       }
 
       return experienceId
@@ -213,6 +212,8 @@ export function ShareWizard() {
             <Step3Photos
               photos={photos}
               onPhotosChange={setPhotos}
+              video={video}
+              onVideoChange={setVideo}
             />
           )}
         </div>

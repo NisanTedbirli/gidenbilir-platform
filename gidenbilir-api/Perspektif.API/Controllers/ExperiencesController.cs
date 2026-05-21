@@ -261,7 +261,8 @@ public class ExperiencesController(AppDbContext db, CacheService cache) : Contro
         x.Photos.Select(p => p.CloudinaryUrl).ToList(),
         x.City, x.BudgetLevel,
         x.Likes.Count,
-        currentUserId.HasValue && x.Likes.Any(l => l.UserId == currentUserId.Value));
+        currentUserId.HasValue && x.Likes.Any(l => l.UserId == currentUserId.Value),
+        x.VideoUrl);
 }
 
 public record AddPhotoRequest(string CloudinaryUrl, string PublicId);

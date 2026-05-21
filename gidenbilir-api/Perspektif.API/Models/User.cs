@@ -71,6 +71,9 @@ public class Experience
     public string? City { get; set; }
     public string? BudgetLevel { get; set; } // "Ucuz" | "Orta" | "Pahalı"
 
+    public string? VideoUrl { get; set; }
+    public string? VideoPublicId { get; set; }
+
     public ICollection<ExperiencePhoto> Photos { get; set; } = [];
     public ICollection<ExperienceLike> Likes { get; set; } = [];
     public ICollection<Comment> Comments { get; set; } = [];

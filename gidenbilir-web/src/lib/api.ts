@@ -152,6 +152,15 @@ export const uploadExperiencePhoto = (experienceId: number, file: File) => {
   })
 }
 
+export const uploadExperienceVideo = (experienceId: number, file: File) => {
+  const formData = new FormData()
+  formData.append('file', file)
+  return api.post(`/uploads/experience/${experienceId}/video`, formData)
+}
+
+export const deleteExperienceVideo = (experienceId: number) =>
+  api.delete(`/uploads/experience/${experienceId}/video`)
+
 export const getExperiencePhotos = (experienceId: number) =>
   api.get<{ id: number; url: string; order: number }[]>(`/experiences/${experienceId}/photos`)
 
