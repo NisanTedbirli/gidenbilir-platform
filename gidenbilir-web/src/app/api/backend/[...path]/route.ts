@@ -21,6 +21,7 @@ async function proxy(req: NextRequest, params: { path: string[] }) {
   const headers = new Headers(req.headers)
   headers.delete('host')
   headers.delete('cookie')
+  headers.set('Accept-Encoding', 'identity') // Render sıkıştırma yapmasın — proxy raw bytes bekler
   if (token) headers.set('Authorization', `Bearer ${token}`)
 
   const hasBody = req.method !== 'GET' && req.method !== 'HEAD'
