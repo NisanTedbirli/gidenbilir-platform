@@ -2,8 +2,9 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Compass, Home, PlusCircle, User } from 'lucide-react'
+import { Compass, Home, MessageSquare, PlusCircle, User } from 'lucide-react'
 import { cn } from '@/lib/cn'
+import { useUnreadMessageCount } from '@/hooks/useUnreadMessages'
 
 interface NavItem {
   href: string
@@ -16,6 +17,7 @@ const NAV_ITEMS: NavItem[] = [
   { href: '/', label: 'Ana Sayfa', icon: Home },
   { href: '/discover', label: 'Keşfet', icon: Compass },
   { href: '/share', label: 'Paylaş', icon: PlusCircle, highlight: true },
+  { href: '/messages', label: 'Mesajlar', icon: MessageSquare },
   { href: '/profile/me', label: 'Profil', icon: User },
 ]
 
@@ -25,6 +27,7 @@ const NAV_ITEMS: NavItem[] = [
  */
 export function MobileNav() {
   const pathname = usePathname()
+  const unreadCount = useUnreadMessageCount()
 
   return (
     <nav
@@ -32,7 +35,7 @@ export function MobileNav() {
       className="fixed inset-x-0 bottom-0 z-sticky border-t border-border bg-bg-surface lg:hidden"
       style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}
     >
-      <ul className="grid grid-cols-4">
+      <ul className="grid grid-cols-5">
         {NAV_ITEMS.map(({ href, label, icon: Icon, highlight }) => {
           const active =
             href === '/' ? pathname === '/' : pathname.startsWith(href.split('/').slice(0, 2).join('/'))
@@ -58,7 +61,14 @@ export function MobileNav() {
                     <Icon size={22} strokeWidth={2.2} />
                   </span>
                 ) : (
-                  <Icon aria-hidden="true" size={22} strokeWidth={active ? 2.2 : 1.8} />
+                    <span className="relative">
+                    <Icon aria-hidden="true" size={22} strokeWidth={active ? 2.2 : 1.8} />
+                    {href === '/messages' && unreadCount > 0 && (
+                      <span className="absolute -right-1.5 -top-1.5 flex h-4 w-4 items-center justify-center rounded-full bg-danger text-[9px] font-bold text-white">
+                        {unreadCount > 9 ? '9+' : unreadCount}
+                      </span>
+                    )}
+                  </span>
                 )}
                 <span>{label}</span>
               </Link>

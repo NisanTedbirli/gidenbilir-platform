@@ -46,6 +46,9 @@ export function useUnreadMessageCount() {
     enabled: !!user,
     refetchInterval: 10_000,
     refetchOnWindowFocus: true,
+    staleTime: 5_000,
+    retry: 3,
+    retryDelay: 2_000,
   })
 
   if (!user || !data) return 0
