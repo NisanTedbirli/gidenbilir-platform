@@ -10,11 +10,7 @@
 import { NextResponse, type NextRequest } from 'next/server'
 import { AUTH_COOKIE_NAME } from '@/lib/auth'
 
-const BACKEND_URL = process.env.API_URL ?? process.env.NEXT_PUBLIC_API_BASE_URL ?? 'http://localhost:5000'
-
-// Lookup endpoint'leri nadiren değişir — Vercel'de 24 saat cache'le.
-// Render cold-start sorununu çözer: ilk istek sonrası Vercel kendi cache'inden döner.
-const LOOKUP_PATHS = ['lookups/nationalities', 'lookups/countries', 'lookups/categories']
+const BACKEND_URL = process.env.API_URL ?? 'http://localhost:5208'
 
 async function proxy(req: NextRequest, params: { path: string[] }) {
   const path = params.path.join('/')
@@ -22,36 +18,28 @@ async function proxy(req: NextRequest, params: { path: string[] }) {
   const target = `${BACKEND_URL}/api/${path}${search}`
 
   const token = req.cookies.get(AUTH_COOKIE_NAME)?.value
-  const headers = new Headers(req.headers)
-  headers.delete('host')
-  headers.delete('cookie') // backend cookie beklemiyor
-  if (token) headers.set('Authorization', `Bearer ${token}`)
 
-  // Body okuma: GET/HEAD body taşımaz
+  const forwardHeaders: Record<string, string> = {
+    'content-type': req.headers.get('content-type') ?? 'application/json',
+    'accept': 'application/json',
+  }
+  if (token) forwardHeaders['authorization'] = `Bearer ${token}`
+
   const hasBody = req.method !== 'GET' && req.method !== 'HEAD'
   const body = hasBody ? await req.arrayBuffer() : undefined
-
-  const isLookup = req.method === 'GET' && LOOKUP_PATHS.includes(path)
 
   try {
     const upstream = await fetch(target, {
       method: req.method,
-      headers,
+      headers: forwardHeaders,
       body,
-      ...(isLookup
-        ? { next: { revalidate: 86400 } }  // 24 saat Vercel cache — Render'ı uyandırmaz
-        : { cache: 'no-store' }),
+      cache: 'no-store',
     })
-
-    const responseHeaders = new Headers(upstream.headers)
-    responseHeaders.delete('access-control-allow-origin')
-    responseHeaders.delete('access-control-allow-credentials')
 
     const responseBody = await upstream.arrayBuffer()
     return new NextResponse(responseBody, {
       status: upstream.status,
-      statusText: upstream.statusText,
-      headers: responseHeaders,
+      headers: { 'content-type': upstream.headers.get('content-type') ?? 'application/json' },
     })
   } catch (err) {
     console.error(`[backend-proxy] ${req.method} ${target}`, err)
