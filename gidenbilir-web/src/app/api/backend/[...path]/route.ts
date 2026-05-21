@@ -44,11 +44,11 @@ async function proxy(req: NextRequest, params: { path: string[] }) {
     })
 
     const responseHeaders = new Headers(upstream.headers)
-    // Backend'in CORS header'larını temizle (aynı origin'iz)
     responseHeaders.delete('access-control-allow-origin')
     responseHeaders.delete('access-control-allow-credentials')
 
-    return new NextResponse(upstream.body, {
+    const responseBody = await upstream.arrayBuffer()
+    return new NextResponse(responseBody, {
       status: upstream.status,
       statusText: upstream.statusText,
       headers: responseHeaders,
