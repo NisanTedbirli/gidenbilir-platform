@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation'
 import { useEffect } from 'react'
 import { useAuthStore } from '@/stores/authStore'
 import { Sidebar } from './Sidebar'
+import { MobileNav } from './MobileNav'
 import { NavigationTracker } from '@/components/NavigationTracker'
 import type { ReactNode } from 'react'
 
@@ -37,6 +38,7 @@ export function ProtectedLayout({ children }: { children: ReactNode }) {
     <div className="min-h-dvh bg-bg">
       <NavigationTracker />
       <Sidebar />
+      <MobileNav />
       <main id="main-content" className="lg:pl-[var(--layout-sidebar-width)]">
         <div className="pb-[88px] lg:pb-0">{children}</div>
       </main>
