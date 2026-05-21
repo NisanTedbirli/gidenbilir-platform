@@ -1,113 +1,84 @@
 'use client'
 
-import { useEffect, useRef, useCallback } from 'react'
+import { useEffect, useRef, useState, useCallback } from 'react'
 import { useInfiniteQuery } from '@tanstack/react-query'
 import { getExperiences } from '@/lib/api'
 import Link from 'next/link'
 import { Heart, MessageCircle, MapPin, Volume2, VolumeX } from 'lucide-react'
-import { useState } from 'react'
 import type { Experience } from '@/types'
 
-type VideoExperience = Experience & { videoUrl: string }
+type VideoExp = Experience & { videoUrl: string }
 
-function VideoItem({ exp, isActive }: { exp: VideoExperience; isActive: boolean }) {
+function VideoSlide({ exp, isActive }: { exp: VideoExp; isActive: boolean }) {
   const videoRef = useRef<HTMLVideoElement>(null)
   const [muted, setMuted] = useState(true)
-  const [playing, setPlaying] = useState(false)
 
   useEffect(() => {
-    const video = videoRef.current
-    if (!video) return
+    const v = videoRef.current
+    if (!v) return
     if (isActive) {
-      video.currentTime = 0
-      video.play().then(() => setPlaying(true)).catch(() => {})
+      v.currentTime = 0
+      v.play().catch(() => {})
     } else {
-      video.pause()
-      setPlaying(false)
+      v.pause()
     }
   }, [isActive])
 
-  const toggleMute = (e: React.MouseEvent) => {
-    e.stopPropagation()
-    if (!videoRef.current) return
-    videoRef.current.muted = !muted
-    setMuted(!muted)
-  }
-
   return (
-    <div className="relative w-full h-full bg-black flex items-center justify-center">
-      <video
-        ref={videoRef}
-        src={exp.videoUrl}
-        className="w-full h-full object-contain"
-        loop
-        muted={muted}
-        playsInline
-        onPlay={() => setPlaying(true)}
-        onPause={() => setPlaying(false)}
-      />
-
-      {/* Gradient overlay bottom */}
-      <div className="absolute inset-x-0 bottom-0 h-2/5 bg-gradient-to-t from-black/80 to-transparent pointer-events-none" />
-
-      {/* Info overlay */}
-      <div className="absolute bottom-0 left-0 right-14 p-lg pb-xl">
-        <Link href={`/experiences/${exp.id}`} className="block">
-          <h2 className="text-white font-bold text-[18px] mb-xs line-clamp-2 drop-shadow">
-            {exp.title}
-          </h2>
-        </Link>
-        <div className="flex items-center gap-2 mb-sm">
-          <span className="text-lg">{exp.authorNationalityFlag}</span>
-          <span className="text-white/90 text-[14px] font-medium">{exp.authorName}</span>
-        </div>
-        <div className="flex items-center gap-1 text-white/80 text-[13px]">
-          <MapPin size={13} />
-          <span>{exp.city ? `${exp.city}, ` : ''}{exp.countryName}</span>
-        </div>
-      </div>
-
-      {/* Right action buttons */}
-      <div className="absolute right-3 bottom-xl flex flex-col items-center gap-xl">
-        {/* Mute */}
+    <div className="flex flex-col bg-black" style={{ height: '100dvh', scrollSnapAlign: 'start', scrollSnapStop: 'always' }}>
+      {/* Video — 75% of viewport */}
+      <div className="relative flex-1 overflow-hidden">
+        <video
+          ref={videoRef}
+          src={exp.videoUrl}
+          className="h-full w-full object-contain"
+          loop
+          muted={muted}
+          playsInline
+        />
+        {/* Mute button */}
         <button
-          onClick={toggleMute}
-          className="flex flex-col items-center gap-1"
+          onClick={() => {
+            if (videoRef.current) videoRef.current.muted = !muted
+            setMuted(m => !m)
+          }}
+          className="absolute bottom-3 right-3 flex size-10 items-center justify-center rounded-full bg-black/50 text-white backdrop-blur-sm"
           aria-label={muted ? 'Sesi aç' : 'Sesi kapat'}
         >
-          <div className="flex size-11 items-center justify-center rounded-full bg-white/20 backdrop-blur-sm">
-            {muted ? <VolumeX size={20} className="text-white" /> : <Volume2 size={20} className="text-white" />}
-          </div>
+          {muted ? <VolumeX size={18} /> : <Volume2 size={18} />}
         </button>
-
-        {/* Like */}
-        <div className="flex flex-col items-center gap-1">
-          <div className="flex size-11 items-center justify-center rounded-full bg-white/20 backdrop-blur-sm">
-            <Heart size={20} className="text-white" />
-          </div>
-          <span className="text-white text-[12px] font-bold">{exp.likeCount}</span>
-        </div>
-
-        {/* Comments */}
-        <Link href={`/experiences/${exp.id}`}>
-          <div className="flex flex-col items-center gap-1">
-            <div className="flex size-11 items-center justify-center rounded-full bg-white/20 backdrop-blur-sm">
-              <MessageCircle size={20} className="text-white" />
-            </div>
-          </div>
-        </Link>
       </div>
 
-      {/* Playing indicator — subtle pulse when active */}
-      {isActive && playing && (
-        <div className="absolute top-4 left-4 flex items-center gap-2 rounded-full bg-black/40 px-3 py-1 backdrop-blur-sm">
-          <span className="relative flex size-2">
-            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-primary opacity-75" />
-            <span className="relative inline-flex size-2 rounded-full bg-primary" />
-          </span>
-          <span className="text-white text-[11px] font-bold">CANLI</span>
+      {/* Info — below video */}
+      <div className="bg-black px-lg pt-md pb-xl flex gap-md">
+        <div className="flex-1 min-w-0">
+          <Link href={`/experiences/${exp.id}`}>
+            <h2 className="text-white font-bold text-[16px] mb-xs line-clamp-2 hover:underline">
+              {exp.title}
+            </h2>
+          </Link>
+          <div className="flex items-center gap-2 mb-xs">
+            <span>{exp.authorNationalityFlag}</span>
+            <span className="text-white/80 text-[13px]">{exp.authorName}</span>
+          </div>
+          {exp.countryName && (
+            <div className="flex items-center gap-1 text-white/60 text-[12px]">
+              <MapPin size={12} />
+              <span>{exp.city ? `${exp.city}, ` : ''}{exp.countryName}</span>
+            </div>
+          )}
         </div>
-      )}
+        {/* Actions */}
+        <div className="flex flex-col items-center gap-lg flex-shrink-0">
+          <div className="flex flex-col items-center gap-1">
+            <Heart size={22} className="text-white/80" />
+            <span className="text-white/70 text-[11px]">{exp.likeCount}</span>
+          </div>
+          <Link href={`/experiences/${exp.id}`} className="flex flex-col items-center gap-1">
+            <MessageCircle size={22} className="text-white/80" />
+          </Link>
+        </div>
+      </div>
     </div>
   )
 }
@@ -120,7 +91,7 @@ export default function VideosPage() {
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } = useInfiniteQuery({
     queryKey: ['experiences', 'videos-feed'],
     queryFn: async ({ pageParam = 1 }) => {
-      const res = await getExperiences({ page: pageParam, pageSize: 10 })
+      const res = await getExperiences({ page: pageParam as number, pageSize: 10 })
       return res.data
     },
     getNextPageParam: (last) => last.hasNextPage ? last.page + 1 : undefined,
@@ -128,27 +99,26 @@ export default function VideosPage() {
   })
 
   const experiences = (data?.pages.flatMap(p => p.items) ?? []).filter(
-    (e): e is VideoExperience => !!e.videoUrl
+    (e): e is VideoExp => !!e.videoUrl
   )
 
-  // Scroll snap ile aktif video tespiti
   const handleScroll = useCallback(() => {
-    if (!containerRef.current) return
-    const { scrollTop, clientHeight } = containerRef.current
-    const index = Math.round(scrollTop / clientHeight)
-    setActiveIndex(index)
+    const el = containerRef.current
+    if (!el) return
+    setActiveIndex(Math.round(el.scrollTop / el.clientHeight))
   }, [])
 
-  // Infinite scroll sentinel
   useEffect(() => {
-    if (!sentinelRef.current) return
+    const sentinel = sentinelRef.current
+    const container = containerRef.current
+    if (!sentinel || !container) return
     const observer = new IntersectionObserver(
       (entries) => {
         if (entries[0]?.isIntersecting && hasNextPage && !isFetchingNextPage) fetchNextPage()
       },
-      { root: containerRef.current, rootMargin: '400px' }
+      { root: container, rootMargin: '400px' }
     )
-    observer.observe(sentinelRef.current)
+    observer.observe(sentinel)
     return () => observer.disconnect()
   }, [hasNextPage, isFetchingNextPage, fetchNextPage])
 
@@ -156,17 +126,28 @@ export default function VideosPage() {
     <div
       ref={containerRef}
       onScroll={handleScroll}
-      className="fixed inset-0 lg:left-[var(--layout-sidebar-width)] overflow-y-scroll"
-      style={{ scrollSnapType: 'y mandatory', scrollbarWidth: 'none' }}
+      style={{
+        position: 'fixed',
+        top: 0,
+        bottom: 0,
+        left: 0,
+        right: 0,
+        overflowY: 'scroll',
+        scrollSnapType: 'y mandatory',
+        scrollbarWidth: 'none',
+        zIndex: 40,
+      }}
+      // On desktop, leave room for sidebar
+      className="lg:left-[var(--layout-sidebar-width)] bg-black"
     >
       {isLoading && (
-        <div className="flex h-screen items-center justify-center bg-black">
+        <div className="flex items-center justify-center" style={{ height: '100dvh' }}>
           <div className="h-10 w-10 animate-spin rounded-full border-2 border-primary border-t-transparent" />
         </div>
       )}
 
       {!isLoading && experiences.length === 0 && (
-        <div className="flex h-screen flex-col items-center justify-center bg-black gap-lg">
+        <div className="flex flex-col items-center justify-center gap-lg" style={{ height: '100dvh' }}>
           <p className="text-white/70 text-lg">Henüz video yok.</p>
           <Link href="/share" className="rounded-full bg-primary px-xl py-md font-bold text-white">
             İlk videoyu ekle
@@ -175,13 +156,7 @@ export default function VideosPage() {
       )}
 
       {experiences.map((exp, idx) => (
-        <div
-          key={exp.id}
-          className="w-full bg-black"
-          style={{ height: '100dvh', scrollSnapAlign: 'start', scrollSnapStop: 'always' }}
-        >
-          <VideoItem exp={exp} isActive={idx === activeIndex} />
-        </div>
+        <VideoSlide key={exp.id} exp={exp} isActive={idx === activeIndex} />
       ))}
 
       <div ref={sentinelRef} style={{ height: 1 }} />
