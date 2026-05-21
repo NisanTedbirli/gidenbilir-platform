@@ -25,9 +25,9 @@ function VideoSlide({ exp, isActive }: { exp: VideoExp; isActive: boolean }) {
   }, [isActive])
 
   return (
-    <div className="flex flex-col bg-black" style={{ height: '100dvh', scrollSnapAlign: 'start', scrollSnapStop: 'always' }}>
-      {/* Video — 75% of viewport */}
-      <div className="relative flex-1 overflow-hidden">
+    <div className="flex flex-col" style={{ height: '100dvh', scrollSnapAlign: 'start', scrollSnapStop: 'always', background: 'var(--color-bg)' }}>
+      {/* Video */}
+      <div className="relative flex-1 overflow-hidden rounded-2xl mx-lg mt-lg" style={{ background: '#000' }}>
         <video
           ref={videoRef}
           src={exp.videoUrl}
@@ -50,19 +50,19 @@ function VideoSlide({ exp, isActive }: { exp: VideoExp; isActive: boolean }) {
       </div>
 
       {/* Info — below video */}
-      <div className="bg-black px-lg pt-md pb-xl flex gap-md">
+      <div className="px-lg pt-md pb-xl flex gap-md">
         <div className="flex-1 min-w-0">
           <Link href={`/experiences/${exp.id}`}>
-            <h2 className="text-white font-bold text-[16px] mb-xs line-clamp-2 hover:underline">
+            <h2 className="text-text font-bold text-[16px] mb-xs line-clamp-2 hover:underline">
               {exp.title}
             </h2>
           </Link>
           <div className="flex items-center gap-2 mb-xs">
             <span>{exp.authorNationalityFlag}</span>
-            <span className="text-white/80 text-[13px]">{exp.authorName}</span>
+            <span className="text-text-sub text-[13px]">{exp.authorName}</span>
           </div>
           {exp.countryName && (
-            <div className="flex items-center gap-1 text-white/60 text-[12px]">
+            <div className="flex items-center gap-1 text-text-mute text-[12px]">
               <MapPin size={12} />
               <span>{exp.city ? `${exp.city}, ` : ''}{exp.countryName}</span>
             </div>
@@ -71,11 +71,11 @@ function VideoSlide({ exp, isActive }: { exp: VideoExp; isActive: boolean }) {
         {/* Actions */}
         <div className="flex flex-col items-center gap-lg flex-shrink-0">
           <div className="flex flex-col items-center gap-1">
-            <Heart size={22} className="text-white/80" />
-            <span className="text-white/70 text-[11px]">{exp.likeCount}</span>
+            <Heart size={22} className="text-text-sub" />
+            <span className="text-text-mute text-[11px]">{exp.likeCount}</span>
           </div>
           <Link href={`/experiences/${exp.id}`} className="flex flex-col items-center gap-1">
-            <MessageCircle size={22} className="text-white/80" />
+            <MessageCircle size={22} className="text-text-sub" />
           </Link>
         </div>
       </div>
@@ -136,9 +136,9 @@ export default function VideosPage() {
         scrollSnapType: 'y mandatory',
         scrollbarWidth: 'none',
         zIndex: 40,
+        background: 'var(--color-bg)',
       }}
-      // On desktop, leave room for sidebar
-      className="lg:left-[var(--layout-sidebar-width)] bg-black"
+      className="lg:left-[var(--layout-sidebar-width)]"
     >
       {isLoading && (
         <div className="flex items-center justify-center" style={{ height: '100dvh' }}>
