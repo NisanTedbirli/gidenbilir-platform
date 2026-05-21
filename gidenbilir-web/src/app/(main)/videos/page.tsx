@@ -27,7 +27,7 @@ function VideoSlide({ exp, isActive }: { exp: VideoExp; isActive: boolean }) {
   return (
     <div className="flex flex-col" style={{ height: '100dvh', scrollSnapAlign: 'start', scrollSnapStop: 'always', background: 'var(--color-bg)' }}>
       {/* Video */}
-      <div className="relative flex-1 overflow-hidden rounded-2xl mx-lg mt-lg" style={{ background: '#000' }}>
+      <div className="relative flex-1 overflow-hidden rounded-2xl mx-lg mt-lg" style={{ background: 'var(--color-bg)' }}>
         <video
           ref={videoRef}
           src={exp.videoUrl}
