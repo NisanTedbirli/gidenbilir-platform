@@ -152,10 +152,28 @@ export const uploadExperiencePhoto = (experienceId: number, file: File) => {
   })
 }
 
-export const uploadExperienceVideo = (experienceId: number, file: File) => {
+// Video upload goes directly to Render — Vercel proxy has 4.5MB body limit.
+export const uploadExperienceVideo = async (experienceId: number, file: File) => {
+  // Get JWT from httpOnly cookie via server-side token endpoint
+  const tokenRes = await fetch('/api/auth/signalr-token')
+  if (!tokenRes.ok) throw new Error('Token alınamadı.')
+  const { token } = (await tokenRes.json()) as { token: string }
+
+  const backendUrl = process.env.NEXT_PUBLIC_API_BASE_URL ?? 'http://localhost:5208'
   const formData = new FormData()
   formData.append('file', file)
-  return api.post(`/uploads/experience/${experienceId}/video`, formData)
+
+  const res = await fetch(`${backendUrl}/api/uploads/experience/${experienceId}/video`, {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${token}` },
+    body: formData,
+  })
+
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({})) as { message?: string }
+    throw new Error(err.message ?? `Video yüklenemedi (${res.status})`)
+  }
+  return res.json()
 }
 
 export const deleteExperienceVideo = (experienceId: number) =>
