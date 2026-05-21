@@ -18,12 +18,10 @@ async function proxy(req: NextRequest, params: { path: string[] }) {
   const target = `${BACKEND_URL}/api/${path}${search}`
 
   const token = req.cookies.get(AUTH_COOKIE_NAME)?.value
-
-  const forwardHeaders: Record<string, string> = {
-    'content-type': req.headers.get('content-type') ?? 'application/json',
-    'accept': 'application/json',
-  }
-  if (token) forwardHeaders['authorization'] = `Bearer ${token}`
+  const headers = new Headers(req.headers)
+  headers.delete('host')
+  headers.delete('cookie')
+  if (token) headers.set('Authorization', `Bearer ${token}`)
 
   const hasBody = req.method !== 'GET' && req.method !== 'HEAD'
   const body = hasBody ? await req.arrayBuffer() : undefined
@@ -31,15 +29,20 @@ async function proxy(req: NextRequest, params: { path: string[] }) {
   try {
     const upstream = await fetch(target, {
       method: req.method,
-      headers: forwardHeaders,
+      headers,
       body,
       cache: 'no-store',
     })
 
+    const responseHeaders = new Headers(upstream.headers)
+    responseHeaders.delete('access-control-allow-origin')
+    responseHeaders.delete('access-control-allow-credentials')
+
     const responseBody = await upstream.arrayBuffer()
     return new NextResponse(responseBody, {
       status: upstream.status,
-      headers: { 'content-type': upstream.headers.get('content-type') ?? 'application/json' },
+      statusText: upstream.statusText,
+      headers: responseHeaders,
     })
   } catch (err) {
     console.error(`[backend-proxy] ${req.method} ${target}`, err)
