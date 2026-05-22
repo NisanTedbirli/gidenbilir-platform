@@ -13,10 +13,9 @@ interface NavItem {
   highlight?: boolean
 }
 
-const NAV_ITEMS: NavItem[] = [
+const SIDE_ITEMS: NavItem[] = [
   { href: '/', label: 'Ana Sayfa', icon: Home },
   { href: '/discover', label: 'Keşfet', icon: Compass },
-  { href: '/share', label: 'Paylaş', icon: PlusCircle, highlight: true },
   { href: '/videos', label: 'Videolar', icon: Play },
   { href: '/messages', label: 'Mesajlar', icon: MessageSquare },
   { href: '/profile/me', label: 'Profil', icon: User },
@@ -33,34 +32,38 @@ export function MobileNav() {
   return (
     <nav
       aria-label="Mobil ana navigasyon"
-      className="fixed inset-x-0 bottom-0 z-sticky border-t border-border bg-bg-surface lg:hidden"
+      className="fixed inset-x-0 bottom-0 z-sticky lg:hidden"
       style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}
     >
-      <ul className="grid grid-cols-6">
-        {NAV_ITEMS.map(({ href, label, icon: Icon, highlight }) => {
-          const active =
-            href === '/' ? pathname === '/' : pathname.startsWith(href.split('/').slice(0, 2).join('/'))
-          return (
-            <li key={href}>
-              <Link
-                href={href}
-                aria-label={label}
-                aria-current={active ? 'page' : undefined}
-                className={cn(
-                  'flex flex-col items-center justify-center py-[10px] transition-colors',
-                  active ? 'text-primary' : 'text-text-sub hover:text-text',
-                  highlight && 'text-primary',
-                )}
-              >
-                {highlight ? (
-                  <span
-                    aria-hidden="true"
-                    className="flex size-9 items-center justify-center rounded-full text-white shadow-md"
-                    style={{ backgroundImage: 'var(--gradient-primary)' }}
-                  >
-                    <Icon size={20} strokeWidth={2.2} />
-                  </span>
-                ) : (
+      {/* Paylaş butonu — yukarıda yüzer */}
+      <div className="absolute left-1/2 -translate-x-1/2 -top-6">
+        <Link
+          href="/share"
+          aria-label="Paylaş"
+          className="flex size-14 items-center justify-center rounded-full text-white shadow-lg"
+          style={{ backgroundImage: 'var(--gradient-primary)' }}
+        >
+          <PlusCircle size={26} strokeWidth={2.2} />
+        </Link>
+      </div>
+
+      {/* Ana nav bar */}
+      <div className="border-t border-border bg-bg-surface">
+        <ul className="grid grid-cols-5">
+          {SIDE_ITEMS.map(({ href, label, icon: Icon }) => {
+            const active =
+              href === '/' ? pathname === '/' : pathname.startsWith(href.split('/').slice(0, 2).join('/'))
+            return (
+              <li key={href}>
+                <Link
+                  href={href}
+                  aria-label={label}
+                  aria-current={active ? 'page' : undefined}
+                  className={cn(
+                    'flex flex-col items-center justify-center py-[10px] transition-colors',
+                    active ? 'text-primary' : 'text-text-sub hover:text-text',
+                  )}
+                >
                   <span className="relative">
                     <Icon aria-hidden="true" size={22} strokeWidth={active ? 2.2 : 1.8} />
                     {href === '/messages' && unreadCount > 0 && (
@@ -69,12 +72,12 @@ export function MobileNav() {
                       </span>
                     )}
                   </span>
-                )}
-              </Link>
-            </li>
-          )
-        })}
-      </ul>
+                </Link>
+              </li>
+            )
+          })}
+        </ul>
+      </div>
     </nav>
   )
 }
