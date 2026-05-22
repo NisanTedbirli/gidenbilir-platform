@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useRef, useState, useCallback } from 'react'
+import { createPortal } from 'react-dom'
 import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { getExperiences, getComments, addComment } from '@/lib/api'
 import Link from 'next/link'
@@ -39,8 +40,8 @@ function CommentSheet({ expId, onClose }: { expId: number; onClose: () => void }
     setText('')
   }
 
-  return (
-    <div style={{ position: 'fixed', inset: 0, zIndex: 200, display: 'flex', flexDirection: 'column', justifyContent: 'flex-end' }} onClick={onClose}>
+  const content = (
+    <div style={{ position: 'fixed', inset: 0, zIndex: 1000, display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', background: 'rgba(0,0,0,0.4)' }} onClick={onClose}>
       <div style={{ background: 'var(--color-bg-surface)', borderRadius: '16px 16px 0 0', maxHeight: '70dvh', display: 'flex', flexDirection: 'column' }} onClick={e => e.stopPropagation()}>
         {/* Header */}
         <div style={{ padding: '12px 16px', borderBottom: '1px solid var(--color-border)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
@@ -76,6 +77,7 @@ function CommentSheet({ expId, onClose }: { expId: number; onClose: () => void }
       </div>
     </div>
   )
+  return typeof document !== 'undefined' ? createPortal(content, document.body) : null
 }
 
 function VideoSlide({ exp, isActive }: { exp: VideoExp; isActive: boolean }) {
