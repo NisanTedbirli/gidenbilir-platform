@@ -2,10 +2,12 @@ using FluentAssertions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
 using Perspektif.API.Controllers;
 using Perspektif.API.Data;
 using Perspektif.API.DTOs;
 using Perspektif.API.Models;
+using Perspektif.API.Services;
 using System.Security.Claims;
 
 namespace Perspektif.API.Tests;
@@ -33,7 +35,8 @@ public class ExperiencesControllerTests : IDisposable
         _db.Categories.Add(category);
         _db.SaveChanges();
 
-        _sut = new ExperiencesController(_db);
+        var cache = new CacheService(new MemoryCache(new MemoryCacheOptions()));
+        _sut = new ExperiencesController(_db, cache);
         SetAuthenticatedUser(OwnerId);
     }
 
