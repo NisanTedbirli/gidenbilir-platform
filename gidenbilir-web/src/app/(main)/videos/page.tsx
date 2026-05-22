@@ -28,8 +28,8 @@ function VideoSlide({ exp, isActive }: { exp: VideoExp; isActive: boolean }) {
 
   return (
     <div style={{ height: '100dvh', scrollSnapAlign: 'start', scrollSnapStop: 'always', background: 'var(--color-bg)' }}>
-      {/* Video — 75% */}
-      <div style={{ position: 'relative', height: '75dvh', margin: '12px 16px 0', borderRadius: '16px', overflow: 'hidden', background: '#f0ebe5' }}>
+      {/* Video — 85% */}
+      <div style={{ position: 'relative', height: '85dvh', margin: '12px 16px 0', borderRadius: '16px', overflow: 'hidden', background: '#f0ebe5' }}>
         <video
           ref={videoRef}
           src={exp.videoUrl}
@@ -47,8 +47,8 @@ function VideoSlide({ exp, isActive }: { exp: VideoExp; isActive: boolean }) {
         </button>
       </div>
 
-      {/* Info — 25% */}
-      <div style={{ height: 'calc(25dvh - 12px)', padding: '12px 16px 8px', overflowY: 'auto', position: 'relative' }}>
+      {/* Info — 15% */}
+      <div style={{ height: 'calc(15dvh - 12px)', padding: '8px 16px 4px', overflowY: 'auto', position: 'relative' }}>
         {/* Actions — absolute right */}
         <div style={{ position: 'absolute', right: 16, top: 12, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12 }}>
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2 }}>
