@@ -137,7 +137,6 @@ export default function VideosPage() {
         position: 'fixed',
         top: 0,
         bottom: 0,
-        left: 0,
         right: 0,
         overflowY: 'scroll',
         scrollSnapType: 'y mandatory',
@@ -145,7 +144,7 @@ export default function VideosPage() {
         zIndex: 40,
         background: 'var(--color-bg)',
       }}
-      className="lg:left-[var(--layout-sidebar-width)]"
+      className="left-0 lg:left-[var(--layout-sidebar-width)]"
     >
       {isLoading && (
         <div className="flex items-center justify-center" style={{ height: '100dvh' }}>
