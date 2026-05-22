@@ -36,7 +36,7 @@ export function MobileNav() {
       style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}
     >
       {/* Paylaş butonu — yukarıda yüzer */}
-      <div className="absolute left-1/2 -translate-x-1/2 -top-6">
+      <div className="absolute left-1/2 -translate-x-1/2 -top-10">
         <Link
           href="/share"
           aria-label="Paylaş"
