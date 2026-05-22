@@ -4,6 +4,7 @@ import { useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { createExperience, uploadExperiencePhoto, uploadExperienceVideo } from '@/lib/api'
+import posthog from 'posthog-js'
 import { Step1Location } from './Step1Location'
 import { Step2Story } from './Step2Story'
 import { Step3Photos } from './Step3Photos'
@@ -76,6 +77,7 @@ export function ShareWizard() {
       return experienceId
     },
     onSuccess: (experienceId) => {
+      posthog.capture('share_experience', { has_photos: photos.length > 0, has_video: !!video })
       queryClient.invalidateQueries({ queryKey: ['experiences'] })
       router.push(`/experiences/${experienceId}`)
     },

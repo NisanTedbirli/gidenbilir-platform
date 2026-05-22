@@ -5,6 +5,7 @@ import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import { useEffect, useState, type ReactNode } from 'react'
 import { useAuthStore } from '@/stores/authStore'
 import { AuthBoot } from '@/components/AuthBoot'
+import { PostHogProvider } from '@/lib/posthog'
 
 export function Providers({ children }: { children: ReactNode }) {
   const [queryClient] = useState(
@@ -40,10 +41,12 @@ export function Providers({ children }: { children: ReactNode }) {
   }, [])
 
   return (
-    <QueryClientProvider client={queryClient}>
-      <AuthBoot />
-      {children}
-      {process.env.NODE_ENV === 'development' && <ReactQueryDevtools initialIsOpen={false} />}
-    </QueryClientProvider>
+    <PostHogProvider>
+      <QueryClientProvider client={queryClient}>
+        <AuthBoot />
+        {children}
+        {process.env.NODE_ENV === 'development' && <ReactQueryDevtools initialIsOpen={false} />}
+      </QueryClientProvider>
+    </PostHogProvider>
   )
 }
