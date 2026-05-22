@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Compass, Home, MessageSquare, Play, PlusCircle, User } from 'lucide-react'
+import { Compass, Home, MessageSquare, PlusCircle, User } from 'lucide-react'
 import { cn } from '@/lib/cn'
 import { useUnreadMessageCount } from '@/hooks/useUnreadMessages'
 
@@ -17,7 +17,6 @@ const NAV_ITEMS: NavItem[] = [
   { href: '/', label: 'Ana Sayfa', icon: Home },
   { href: '/discover', label: 'Keşfet', icon: Compass },
   { href: '/share', label: 'Paylaş', icon: PlusCircle, highlight: true },
-  { href: '/videos', label: 'Videolar', icon: Play },
   { href: '/messages', label: 'Mesajlar', icon: MessageSquare },
   { href: '/profile/me', label: 'Profil', icon: User },
 ]
@@ -36,7 +35,7 @@ export function MobileNav() {
       className="fixed inset-x-0 bottom-0 z-sticky border-t border-border bg-bg-surface lg:hidden"
       style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}
     >
-      <ul className="grid grid-cols-6">
+      <ul className="grid grid-cols-5">
         {NAV_ITEMS.map(({ href, label, icon: Icon, highlight }) => {
           const active =
             href === '/' ? pathname === '/' : pathname.startsWith(href.split('/').slice(0, 2).join('/'))
