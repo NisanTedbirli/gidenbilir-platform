@@ -25,8 +25,13 @@ export function ExperienceCard({ experience, priority = false }: ExperienceCardP
   const extraPhotos = (experience.photoUrls?.length ?? 0) - 1
   const ratingStars = Math.round(experience.rating || 0)
 
+  // Video olan kartlara tıklayınca detay sayfası otomatik fullscreen video ile açılır
+  const href = experience.videoUrl
+    ? `/experiences/${experience.id}?video=1`
+    : `/experiences/${experience.id}`
+
   return (
-    <Link href={`/experiences/${experience.id}`}>
+    <Link href={href}>
       <article className="group overflow-hidden rounded-2xl border border-border bg-bg-surface shadow-md transition hover:shadow-lg hover:brightness-95">
         {/* Cover Photo / Video Thumbnail */}
         <div className="relative aspect-video overflow-hidden bg-bg-elevated">

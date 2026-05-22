@@ -11,6 +11,7 @@ import { BackLink } from '@/components/detail/BackLink'
 
 interface DetailPageProps {
   params: Promise<{ id: string }>
+  searchParams: Promise<{ video?: string }>
 }
 
 export async function generateMetadata({
@@ -45,8 +46,10 @@ export async function generateMetadata({
   }
 }
 
-export default async function DetailPage({ params }: DetailPageProps) {
+export default async function DetailPage({ params, searchParams }: DetailPageProps) {
   const { id } = await params
+  const { video } = await searchParams
+  const openVideoFullscreen = video === '1'
   const numId = Number(id)
 
   try {
@@ -88,6 +91,7 @@ export default async function DetailPage({ params }: DetailPageProps) {
                   src={experience.videoUrl}
                   title={experience.title}
                   className="aspect-video w-full"
+                  openFullscreenOnMount={openVideoFullscreen}
                 />
               )}
             </div>
