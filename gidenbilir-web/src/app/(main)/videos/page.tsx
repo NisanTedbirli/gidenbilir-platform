@@ -27,9 +27,9 @@ function VideoSlide({ exp, isActive }: { exp: VideoExp; isActive: boolean }) {
   }, [isActive])
 
   return (
-    <div className="flex flex-col" style={{ height: '100dvh', scrollSnapAlign: 'start', scrollSnapStop: 'always', background: 'var(--color-bg)' }}>
-      {/* Video */}
-      <div className="relative flex-1 overflow-hidden rounded-2xl mx-lg mt-lg" style={{ background: 'var(--color-bg)' }}>
+    <div className="flex flex-col overflow-hidden" style={{ height: '100dvh', scrollSnapAlign: 'start', scrollSnapStop: 'always', background: 'var(--color-bg)' }}>
+      {/* Video — 68% height */}
+      <div className="relative overflow-hidden rounded-2xl mx-lg mt-lg" style={{ height: '68dvh', flexShrink: 0, background: 'var(--color-bg)' }}>
         <video
           ref={videoRef}
           src={exp.videoUrl}
@@ -51,8 +51,8 @@ function VideoSlide({ exp, isActive }: { exp: VideoExp; isActive: boolean }) {
         </button>
       </div>
 
-      {/* Info — below video */}
-      <div className="px-lg pt-md pb-xl flex gap-md">
+      {/* Info — below video, 32% height */}
+      <div className="px-lg pt-md pb-lg flex gap-md overflow-hidden" style={{ flex: '1 1 0', minHeight: 0 }}>
         <div className="flex-1 min-w-0">
           {/* Title */}
           <Link href={`/experiences/${exp.id}`}>
