@@ -4,7 +4,7 @@ import { useEffect, useRef, useState, useCallback } from 'react'
 import { useInfiniteQuery } from '@tanstack/react-query'
 import { getExperiences } from '@/lib/api'
 import Link from 'next/link'
-import { Heart, MessageCircle, MapPin, Volume2, VolumeX } from 'lucide-react'
+import { Heart, MessageCircle, Volume2, VolumeX } from 'lucide-react'
 import type { Experience } from '@/types'
 
 type VideoExp = Experience & { videoUrl: string }
@@ -48,44 +48,42 @@ function VideoSlide({ exp, isActive }: { exp: VideoExp; isActive: boolean }) {
       </div>
 
       {/* Info — 15% */}
-      <div style={{ height: 'calc(15dvh - 12px)', padding: '8px 16px 4px', overflowY: 'auto', position: 'relative' }}>
-        {/* Actions — absolute right */}
-        <div style={{ position: 'absolute', right: 16, top: 12, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12 }}>
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2 }}>
-            <Heart size={22} color="var(--color-text-sub)" />
-            <span style={{ fontSize: 11, color: 'var(--color-text-mute)' }}>{exp.likeCount}</span>
-          </div>
-          <Link href={`/experiences/${exp.id}`}>
-            <MessageCircle size={22} color="var(--color-text-sub)" />
-          </Link>
-        </div>
+      <div style={{ height: 'calc(15dvh - 12px)', padding: '8px 16px 4px', overflowY: 'auto', display: 'grid', gridTemplateColumns: '1fr 48px', gap: 8, alignItems: 'start' }}>
 
-        {/* Text content */}
-        <div style={{ paddingRight: 48 }}>
+        {/* Sol: metin */}
+        <div>
           <Link href={`/experiences/${exp.id}`}>
-            <p style={{ fontWeight: 700, fontSize: 15, color: 'var(--color-text)', marginBottom: 4, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+            <p style={{ fontWeight: 700, fontSize: 15, color: '#1a1a1a', marginBottom: 3, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
               {exp.title}
             </p>
           </Link>
-          <p style={{ fontSize: 12, color: 'var(--color-text-sub)', marginBottom: 4 }}>
+          <p style={{ fontSize: 12, color: '#6b7280', marginBottom: 3 }}>
             {exp.authorNationalityFlag} {exp.authorName}
-            {exp.countryName && <> · <MapPin size={10} style={{ display: 'inline', verticalAlign: 'middle' }} /> {exp.city ? `${exp.city}, ` : ''}{exp.countryName}</>}
+            {exp.countryName && <> · {exp.city ? `${exp.city}, ` : ''}{exp.countryName}</>}
           </p>
           {exp.description && (
             <>
-              <p style={{ fontSize: 12, color: 'var(--color-text-sub)', lineHeight: 1.5, display: expanded ? 'block' : '-webkit-box', WebkitLineClamp: expanded ? undefined : 2, WebkitBoxOrient: 'vertical', overflow: expanded ? 'visible' : 'hidden' }}>
+              <p style={{ fontSize: 12, color: '#6b7280', lineHeight: 1.4, display: expanded ? 'block' : '-webkit-box', WebkitLineClamp: expanded ? undefined : 2, WebkitBoxOrient: 'vertical' as const, overflow: expanded ? 'visible' : 'hidden' }}>
                 {exp.description}
               </p>
               {isLong && (
-                <button
-                  onClick={() => setExpanded(e => !e)}
-                  style={{ fontSize: 12, color: 'var(--color-primary)', fontWeight: 600, background: 'none', border: 'none', cursor: 'pointer', padding: 0, marginTop: 2 }}
-                >
+                <button onClick={() => setExpanded(e => !e)} style={{ fontSize: 11, color: '#ff6b35', fontWeight: 600, background: 'none', border: 'none', cursor: 'pointer', padding: 0, marginTop: 2 }}>
                   {expanded ? 'Daha az' : '...devamını gör'}
                 </button>
               )}
             </>
           )}
+        </div>
+
+        {/* Sağ: ikonlar */}
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10 }}>
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 1 }}>
+            <Heart size={20} color="#6b7280" />
+            <span style={{ fontSize: 10, color: '#c4c4c4' }}>{exp.likeCount}</span>
+          </div>
+          <Link href={`/experiences/${exp.id}`}>
+            <MessageCircle size={20} color="#6b7280" />
+          </Link>
         </div>
       </div>
     </div>
