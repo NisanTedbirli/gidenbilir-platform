@@ -12,6 +12,8 @@ type VideoExp = Experience & { videoUrl: string }
 function VideoSlide({ exp, isActive }: { exp: VideoExp; isActive: boolean }) {
   const videoRef = useRef<HTMLVideoElement>(null)
   const [muted, setMuted] = useState(true)
+  const [expanded, setExpanded] = useState(false)
+  const isLong = (exp.description?.length ?? 0) > 100
 
   useEffect(() => {
     const v = videoRef.current
@@ -52,24 +54,48 @@ function VideoSlide({ exp, isActive }: { exp: VideoExp; isActive: boolean }) {
       {/* Info — below video */}
       <div className="px-lg pt-md pb-xl flex gap-md">
         <div className="flex-1 min-w-0">
+          {/* Title */}
           <Link href={`/experiences/${exp.id}`}>
-            <h2 className="text-text font-bold text-[16px] mb-xs line-clamp-2 hover:underline">
+            <h2 className="text-text font-bold text-[16px] mb-xs hover:underline line-clamp-1">
               {exp.title}
             </h2>
           </Link>
-          <div className="flex items-center gap-2 mb-xs">
+
+          {/* Author + location */}
+          <div className="flex items-center gap-2 mb-sm">
             <span>{exp.authorNationalityFlag}</span>
-            <span className="text-text-sub text-[13px]">{exp.authorName}</span>
+            <span className="text-text-sub text-[13px] font-medium">{exp.authorName}</span>
+            {exp.countryName && (
+              <>
+                <span className="text-text-mute text-[12px]">·</span>
+                <div className="flex items-center gap-1 text-text-mute text-[12px]">
+                  <MapPin size={11} />
+                  <span>{exp.city ? `${exp.city}, ` : ''}{exp.countryName}</span>
+                </div>
+              </>
+            )}
           </div>
-          {exp.countryName && (
-            <div className="flex items-center gap-1 text-text-mute text-[12px]">
-              <MapPin size={12} />
-              <span>{exp.city ? `${exp.city}, ` : ''}{exp.countryName}</span>
+
+          {/* Description with expand */}
+          {exp.description && (
+            <div>
+              <p className={`text-text-sub text-[13px] leading-relaxed ${expanded ? '' : 'line-clamp-2'}`}>
+                {exp.description}
+              </p>
+              {isLong && (
+                <button
+                  onClick={() => setExpanded(e => !e)}
+                  className="text-primary text-[12px] font-semibold mt-xs hover:underline"
+                >
+                  {expanded ? 'Daha az göster' : '...devamını gör'}
+                </button>
+              )}
             </div>
           )}
         </div>
+
         {/* Actions */}
-        <div className="flex flex-col items-center gap-lg flex-shrink-0">
+        <div className="flex flex-col items-center gap-lg flex-shrink-0 pt-xs">
           <div className="flex flex-col items-center gap-1">
             <Heart size={22} className="text-text-sub" />
             <span className="text-text-mute text-[11px]">{exp.likeCount}</span>
