@@ -1,19 +1,100 @@
 'use client'
 
 import { useEffect, useRef, useState, useCallback } from 'react'
-import { useInfiniteQuery } from '@tanstack/react-query'
-import { getExperiences } from '@/lib/api'
+import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { getExperiences, getComments, addComment } from '@/lib/api'
 import Link from 'next/link'
-import { Heart, MessageCircle, Volume2, VolumeX } from 'lucide-react'
-import type { Experience } from '@/types'
+import { Heart, MessageCircle, Send, Volume2, VolumeX, X } from 'lucide-react'
+import { useAuthStore } from '@/stores/authStore'
+import type { Comment, Experience } from '@/types'
 
 type VideoExp = Experience & { videoUrl: string }
+
+function CommentSheet({ expId, onClose }: { expId: number; onClose: () => void }) {
+  const user = useAuthStore(s => s.user)
+  const queryClient = useQueryClient()
+  const [text, setText] = useState('')
+  const inputRef = useRef<HTMLInputElement>(null)
+
+  const { data: comments = [] } = useQuery({
+    queryKey: ['comments', String(expId)],
+    queryFn: async () => (await getComments(expId)).data,
+  })
+
+  const mutation = useMutation({
+    mutationFn: (t: string) => addComment(expId, t),
+    onMutate: (t) => {
+      queryClient.setQueryData(['comments', String(expId)], (old: Comment[] = []) => [
+        ...old,
+        { id: -1, text: t, authorFullName: user?.fullName ?? 'Siz', authorNationalityFlag: user?.nationalityFlag ?? '🌍', createdAt: new Date().toISOString(), userId: user?.userId ?? 0 },
+      ])
+    },
+    onSettled: () => queryClient.invalidateQueries({ queryKey: ['comments', String(expId)] }),
+  })
+
+  const submit = () => {
+    const t = text.trim()
+    if (!t) return
+    mutation.mutate(t)
+    setText('')
+  }
+
+  return (
+    <div style={{ position: 'fixed', inset: 0, zIndex: 200, display: 'flex', flexDirection: 'column', justifyContent: 'flex-end' }} onClick={onClose}>
+      <div style={{ background: 'var(--color-bg-surface)', borderRadius: '16px 16px 0 0', maxHeight: '70dvh', display: 'flex', flexDirection: 'column' }} onClick={e => e.stopPropagation()}>
+        {/* Header */}
+        <div style={{ padding: '12px 16px', borderBottom: '1px solid var(--color-border)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <span style={{ fontWeight: 700, fontSize: 15 }}>Yorumlar</span>
+          <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer' }}><X size={20} /></button>
+        </div>
+        {/* Comments list */}
+        <div style={{ flex: 1, overflowY: 'auto', padding: '8px 16px' }}>
+          {comments.length === 0 && <p style={{ color: '#6b7280', fontSize: 13, textAlign: 'center', padding: '16px 0' }}>Henüz yorum yok.</p>}
+          {comments.map((c, i) => (
+            <div key={c.id !== -1 ? c.id : `tmp-${i}`} style={{ marginBottom: 12 }}>
+              <span style={{ fontWeight: 600, fontSize: 13 }}>{c.authorNationalityFlag} {c.authorFullName}</span>
+              <p style={{ fontSize: 13, color: '#374151', marginTop: 2, maxWidth: '100%' }}>{c.text}</p>
+            </div>
+          ))}
+        </div>
+        {/* Input */}
+        {user && (
+          <div style={{ padding: '8px 16px 16px', borderTop: '1px solid var(--color-border)', display: 'flex', gap: 8, alignItems: 'center' }}>
+            <input
+              ref={inputRef}
+              value={text}
+              onChange={e => setText(e.target.value)}
+              onKeyDown={e => e.key === 'Enter' && submit()}
+              placeholder="Yorum yaz..."
+              style={{ flex: 1, border: '1px solid var(--color-border)', borderRadius: 20, padding: '8px 14px', fontSize: 13, background: 'var(--color-bg-elevated)', outline: 'none' }}
+            />
+            <button onClick={submit} disabled={!text.trim() || mutation.isPending} style={{ background: '#ff6b35', border: 'none', borderRadius: '50%', width: 36, height: 36, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', opacity: !text.trim() ? 0.4 : 1 }}>
+              <Send size={16} color="white" />
+            </button>
+          </div>
+        )}
+      </div>
+    </div>
+  )
+}
 
 function VideoSlide({ exp, isActive }: { exp: VideoExp; isActive: boolean }) {
   const videoRef = useRef<HTMLVideoElement>(null)
   const [muted, setMuted] = useState(true)
   const [expanded, setExpanded] = useState(false)
+  const [showComments, setShowComments] = useState(false)
+  const [isLiked, setIsLiked] = useState(exp.isLikedByMe)
+  const [likeCount, setLikeCount] = useState(exp.likeCount)
   const isLong = (exp.description?.length ?? 0) > 100
+
+  const handleLike = async () => {
+    setIsLiked(l => !l)
+    setLikeCount(c => isLiked ? c - 1 : c + 1)
+    try {
+      const res = await fetch(`/api/backend/experiences/${exp.id}/like`, { method: 'POST', credentials: 'include' })
+      if (res.ok) { const d = await res.json(); setLikeCount(d.likeCount); setIsLiked(d.isLikedByMe) }
+    } catch { setIsLiked(exp.isLikedByMe); setLikeCount(exp.likeCount) }
+  }
 
   useEffect(() => {
     const v = videoRef.current
@@ -77,15 +158,17 @@ function VideoSlide({ exp, isActive }: { exp: VideoExp; isActive: boolean }) {
 
         {/* Sağ: ikonlar */}
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10 }}>
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 1 }}>
-            <Heart size={20} color="#6b7280" />
-            <span style={{ fontSize: 10, color: '#c4c4c4' }}>{exp.likeCount}</span>
-          </div>
-          <Link href={`/experiences/${exp.id}`}>
+          <button onClick={handleLike} style={{ background: 'none', border: 'none', cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 1, padding: 0 }}>
+            <Heart size={20} fill={isLiked ? '#ff6b6b' : 'none'} color={isLiked ? '#ff6b6b' : '#6b7280'} />
+            <span style={{ fontSize: 10, color: '#6b7280' }}>{likeCount}</span>
+          </button>
+          <button onClick={() => setShowComments(true)} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
             <MessageCircle size={20} color="#6b7280" />
-          </Link>
+          </button>
         </div>
       </div>
+
+      {showComments && <CommentSheet expId={exp.id} onClose={() => setShowComments(false)} />}
     </div>
   )
 }
