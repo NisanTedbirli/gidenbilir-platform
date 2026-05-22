@@ -27,81 +27,65 @@ function VideoSlide({ exp, isActive }: { exp: VideoExp; isActive: boolean }) {
   }, [isActive])
 
   return (
-    <div style={{ height: '100dvh', scrollSnapAlign: 'start', scrollSnapStop: 'always', background: 'var(--color-bg)', display: 'flex', flexDirection: 'column' }}>
-      {/* Video */}
-      <div className="relative overflow-hidden" style={{ height: '65dvh', margin: '12px 16px 0', borderRadius: '16px', background: '#f5f0eb', flexShrink: 0 }}>
+    <div style={{ height: '100dvh', scrollSnapAlign: 'start', scrollSnapStop: 'always', background: 'var(--color-bg)' }}>
+      {/* Video — 75% */}
+      <div style={{ position: 'relative', height: '75dvh', margin: '12px 16px 0', borderRadius: '16px', overflow: 'hidden', background: '#f0ebe5' }}>
         <video
           ref={videoRef}
           src={exp.videoUrl}
-          className="h-full w-full object-contain"
+          style={{ width: '100%', height: '100%', objectFit: 'contain' }}
           loop
           muted={muted}
           playsInline
         />
         <button
-          onClick={() => {
-            if (videoRef.current) videoRef.current.muted = !muted
-            setMuted(m => !m)
-          }}
-          className="absolute bottom-3 right-3 flex size-10 items-center justify-center rounded-full bg-black/50 text-white backdrop-blur-sm"
+          onClick={() => { if (videoRef.current) videoRef.current.muted = !muted; setMuted(m => !m) }}
+          style={{ position: 'absolute', bottom: 12, right: 12, width: 40, height: 40, borderRadius: '50%', background: 'rgba(0,0,0,0.5)', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white' }}
           aria-label={muted ? 'Sesi aç' : 'Sesi kapat'}
         >
           {muted ? <VolumeX size={18} /> : <Volume2 size={18} />}
         </button>
       </div>
 
-      {/* Info */}
-      <div className="px-lg pt-md flex gap-md" style={{ height: 'calc(35dvh - 12px)', overflowY: 'auto' }}>
-        <div className="flex-1 min-w-0">
-          {/* Title */}
-          <Link href={`/experiences/${exp.id}`}>
-            <h2 className="text-text font-bold text-[16px] mb-xs hover:underline line-clamp-1">
-              {exp.title}
-            </h2>
-          </Link>
-
-          {/* Author + location */}
-          <div className="flex items-center gap-2 mb-sm">
-            <span>{exp.authorNationalityFlag}</span>
-            <span className="text-text-sub text-[13px] font-medium">{exp.authorName}</span>
-            {exp.countryName && (
-              <>
-                <span className="text-text-mute text-[12px]">·</span>
-                <div className="flex items-center gap-1 text-text-mute text-[12px]">
-                  <MapPin size={11} />
-                  <span>{exp.city ? `${exp.city}, ` : ''}{exp.countryName}</span>
-                </div>
-              </>
-            )}
+      {/* Info — 25% */}
+      <div style={{ height: 'calc(25dvh - 12px)', padding: '12px 16px 8px', overflowY: 'auto', position: 'relative' }}>
+        {/* Actions — absolute right */}
+        <div style={{ position: 'absolute', right: 16, top: 12, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12 }}>
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2 }}>
+            <Heart size={22} color="var(--color-text-sub)" />
+            <span style={{ fontSize: 11, color: 'var(--color-text-mute)' }}>{exp.likeCount}</span>
           </div>
+          <Link href={`/experiences/${exp.id}`}>
+            <MessageCircle size={22} color="var(--color-text-sub)" />
+          </Link>
+        </div>
 
-          {/* Description with expand */}
+        {/* Text content */}
+        <div style={{ paddingRight: 48 }}>
+          <Link href={`/experiences/${exp.id}`}>
+            <p style={{ fontWeight: 700, fontSize: 15, color: 'var(--color-text)', marginBottom: 4, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+              {exp.title}
+            </p>
+          </Link>
+          <p style={{ fontSize: 12, color: 'var(--color-text-sub)', marginBottom: 4 }}>
+            {exp.authorNationalityFlag} {exp.authorName}
+            {exp.countryName && <> · <MapPin size={10} style={{ display: 'inline', verticalAlign: 'middle' }} /> {exp.city ? `${exp.city}, ` : ''}{exp.countryName}</>}
+          </p>
           {exp.description && (
-            <div>
-              <p className={`text-text-sub text-[13px] leading-relaxed ${expanded ? '' : 'line-clamp-2'}`}>
+            <>
+              <p style={{ fontSize: 12, color: 'var(--color-text-sub)', lineHeight: 1.5, display: expanded ? 'block' : '-webkit-box', WebkitLineClamp: expanded ? undefined : 2, WebkitBoxOrient: 'vertical', overflow: expanded ? 'visible' : 'hidden' }}>
                 {exp.description}
               </p>
               {isLong && (
                 <button
                   onClick={() => setExpanded(e => !e)}
-                  className="text-primary text-[12px] font-semibold mt-xs hover:underline"
+                  style={{ fontSize: 12, color: 'var(--color-primary)', fontWeight: 600, background: 'none', border: 'none', cursor: 'pointer', padding: 0, marginTop: 2 }}
                 >
-                  {expanded ? 'Daha az göster' : '...devamını gör'}
+                  {expanded ? 'Daha az' : '...devamını gör'}
                 </button>
               )}
-            </div>
+            </>
           )}
-        </div>
-
-        {/* Actions */}
-        <div className="flex flex-col items-center gap-lg flex-shrink-0 pt-xs">
-          <div className="flex flex-col items-center gap-1">
-            <Heart size={22} className="text-text-sub" />
-            <span className="text-text-mute text-[11px]">{exp.likeCount}</span>
-          </div>
-          <Link href={`/experiences/${exp.id}`} className="flex flex-col items-center gap-1">
-            <MessageCircle size={22} className="text-text-sub" />
-          </Link>
         </div>
       </div>
     </div>
