@@ -27,9 +27,9 @@ function VideoSlide({ exp, isActive }: { exp: VideoExp; isActive: boolean }) {
   }, [isActive])
 
   return (
-    <div className="flex flex-col overflow-hidden" style={{ height: '100dvh', scrollSnapAlign: 'start', scrollSnapStop: 'always', background: 'var(--color-bg)' }}>
-      {/* Video — 68% height */}
-      <div className="relative overflow-hidden rounded-2xl mx-lg mt-lg" style={{ height: '68dvh', flexShrink: 0, background: 'var(--color-bg)' }}>
+    <div style={{ height: '100dvh', scrollSnapAlign: 'start', scrollSnapStop: 'always', background: 'var(--color-bg)', display: 'flex', flexDirection: 'column' }}>
+      {/* Video */}
+      <div className="relative overflow-hidden" style={{ height: '65dvh', margin: '12px 16px 0', borderRadius: '16px', background: '#f5f0eb', flexShrink: 0 }}>
         <video
           ref={videoRef}
           src={exp.videoUrl}
@@ -38,7 +38,6 @@ function VideoSlide({ exp, isActive }: { exp: VideoExp; isActive: boolean }) {
           muted={muted}
           playsInline
         />
-        {/* Mute button */}
         <button
           onClick={() => {
             if (videoRef.current) videoRef.current.muted = !muted
@@ -51,8 +50,8 @@ function VideoSlide({ exp, isActive }: { exp: VideoExp; isActive: boolean }) {
         </button>
       </div>
 
-      {/* Info — below video, 32% height */}
-      <div className="px-lg pt-md pb-lg flex gap-md overflow-hidden" style={{ flex: '1 1 0', minHeight: 0 }}>
+      {/* Info */}
+      <div className="px-lg pt-md flex gap-md" style={{ height: 'calc(35dvh - 12px)', overflowY: 'auto' }}>
         <div className="flex-1 min-w-0">
           {/* Title */}
           <Link href={`/experiences/${exp.id}`}>
